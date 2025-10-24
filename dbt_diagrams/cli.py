@@ -316,15 +316,12 @@ def serve(ctx, port, browser, target_path):
         if not target_dir.exists():
             exit_with_error(f"Target directory does not exist: {target_dir}")
 
-        # Change to target directory
-        os.chdir(target_dir)
-
         # Check if docs files exist (they should after running generate)
-        if not Path("index.html").exists():
+        if not (target_dir / "index.html").exists():
             exit_with_error("index.html not found. Please run 'dbt-diagrams docs generate' first.")
 
         required_files = ["manifest.json"]
-        missing_files = [f for f in required_files if not Path(f).exists()]
+        missing_files = [f for f in required_files if not (target_dir / f).exists()]
         if missing_files:
             exit_with_error(
                 f"Missing required files: {', '.join(missing_files)}. "
@@ -337,8 +334,9 @@ def serve(ctx, port, browser, target_path):
         if browser:
             webbrowser.open_new_tab(f"http://localhost:{port}")
 
-        # Start the server
-        with socketserver.TCPServer(("", port), SimpleHTTPRequestHandler) as httpd:
+        import functools
+        handler = functools.partial(SimpleHTTPRequestHandler, directory=str(target_dir))
+        with socketserver.TCPServer(("", port), handler) as httpd:
             click.secho(f"Serving docs at http://localhost:{port}", fg="green")
             click.echo(f"Target directory: {target_dir.absolute()}")
             click.echo("\nPress Ctrl+C to exit.")
