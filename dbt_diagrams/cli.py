@@ -316,17 +316,9 @@ def serve(ctx, port, browser, target_path):
         if not target_dir.exists():
             exit_with_error(f"Target directory does not exist: {target_dir}")
 
-        # Check if docs files exist (they should after running generate)
+        # Check if docs have been generated
         if not (target_dir / "index.html").exists():
-            exit_with_error("index.html not found. Please run 'dbt-diagrams docs generate' first.")
-
-        required_files = ["manifest.json"]
-        missing_files = [f for f in required_files if not (target_dir / f).exists()]
-        if missing_files:
-            exit_with_error(
-                f"Missing required files: {', '.join(missing_files)}. "
-                f"Please run 'dbt-diagrams docs generate' first."
-            )
+            exit_with_error("Documentation not found. Please run 'dbt-diagrams docs generate' first.")
 
         click.echo("Using existing docs (with ERDs and customizations)...")
 
