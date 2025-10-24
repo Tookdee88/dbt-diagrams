@@ -47,7 +47,7 @@ def get_target_dir():
 
     # Check dbt_project.yml
     dbt_project_target_path = None
-    if os.path.exists("./dbt_project.yml"):
+    if Path("./dbt_project.yml").exists():
         with open("./dbt_project.yml", "r") as dbt_project_file:
             dbt_project_target_path = yaml.safe_load(dbt_project_file.read()).get("target-path")
 
@@ -320,11 +320,11 @@ def serve(ctx, port, browser, target_path):
         os.chdir(target_dir)
 
         # Check if docs files exist (they should after running generate)
-        if not os.path.exists("index.html"):
+        if not Path("index.html").exists():
             exit_with_error("index.html not found. Please run 'dbt-diagrams docs generate' first.")
 
         required_files = ["manifest.json"]
-        missing_files = [f for f in required_files if not os.path.exists(f)]
+        missing_files = [f for f in required_files if not Path(f).exists()]
         if missing_files:
             exit_with_error(
                 f"Missing required files: {', '.join(missing_files)}. "
