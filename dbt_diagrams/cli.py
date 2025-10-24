@@ -318,7 +318,9 @@ def serve(ctx, port, browser, target_path):
 
         # Check if docs have been generated
         if not (target_dir / "index.html").exists():
-            exit_with_error("Documentation not found. Please run 'dbt-diagrams docs generate' first.")
+            exit_with_error(
+                "Documentation not found. Please run 'dbt-diagrams docs generate' first."
+            )
 
         click.echo("Using existing docs (with ERDs and customizations)...")
 
@@ -327,6 +329,7 @@ def serve(ctx, port, browser, target_path):
             webbrowser.open_new_tab(f"http://localhost:{port}")
 
         import functools
+
         handler = functools.partial(SimpleHTTPRequestHandler, directory=str(target_dir))
         with socketserver.TCPServer(("", port), handler) as httpd:
             click.secho(f"Serving docs at http://localhost:{port}", fg="green")
